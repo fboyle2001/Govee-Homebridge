@@ -1,0 +1,6 @@
+{
+  "example-note": "Remove this field and change the name to config.json",
+  "devices": {
+    "DEVICE-NAME": "DEVICE-MAC"
+  }
+}
