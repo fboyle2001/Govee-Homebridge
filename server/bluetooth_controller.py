@@ -19,23 +19,31 @@ class GoveePacket:
             self.set_data_byte(index, byte)
             self.sig = self.sig ^ byte
 
-    def generate_packet(self):
-        byte_no = 0
+    def generate(self):
         sgm_id = fix_hex_length(self.identifier, 1)
         sgm_data = fix_hex_length(self.data, 18)
         sgm_xor = fix_hex_length(self.sig, 1)
         return sgm_id + sgm_data + sgm_xor
 
     @staticmethod
-    def generate_rgb_packet(r, g, b):
+    def rgb_packet(r, g, b):
         structure = GoveePacket(51)
         structure.set_data([5, 2, r, g, b, 0, 255, 174, 84])
-        return structure.generate_packet()
+        return structure.generate()
+
+    @staticmethod
+    def brightness_packet(level):
+        structure = GoveePacket(51)
+        structure.set_data([4, level])
+        return structure.generate()
+
+    @staticmethod
+    def keep_alive_packet():
+        structure = GoveePacket(170)
+        structure.set_data([1])
+        return structure.generate()
 
 def fix_hex_length(intv, length):
     h = hex(intv).replace("0x", "")
     h = (length * 2 - len(h)) * "0" + h
     return h
-
-packet = GoveePacket.generate_rgb_packet(r, g, b)
-print(packet)
