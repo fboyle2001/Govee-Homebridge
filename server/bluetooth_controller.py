@@ -1,5 +1,4 @@
-#import pexpect
-#gatt = pexpect.spawn("gatttool -I")
+import pexpect
 
 class GoveePacket:
     def __init__(self, identifier):
@@ -47,3 +46,18 @@ def fix_hex_length(intv, length):
     h = hex(intv).replace("0x", "")
     h = (length * 2 - len(h)) * "0" + h
     return h
+
+def send_command(gatt, device, packet):
+    gatt.sendline(f"connect {device}")
+
+    try:
+        gatt.expect("Connection successful", timeout=5)
+    except pexpect.exceptions.TIMEOUT:
+        return False
+
+    gatt.sendline(f"char-write-cmd 0x0015 {packet}")
+    gatt.expect(".*")
+    gatt.sendline("disconnect")
+    gatt.expect(".*")
+
+    return True

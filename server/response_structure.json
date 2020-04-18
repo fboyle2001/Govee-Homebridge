@@ -1,0 +1,9 @@
+{
+  "status": {
+    "code": <int>,
+    "message": <str>
+  },
+  "data": {
+    //dictionary of data
+  }
+}
