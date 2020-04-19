@@ -3,9 +3,10 @@ config = {
     "linux": False
 }
 
-try:
-    f = open("linux_mode.config")
-    config["linux"] = True
+import os.path
+
+if os.path.isfile("linux_mode.config"):
     print("Using Linux mode")
-except FileNotFoundError:
-    pass
+    config["linux"] = True
+else:
+    print("Using Windows mode")
