@@ -6,7 +6,6 @@ config = {
 try:
     f = open("linux_mode.config")
     config["linux"] = True
-except IOError:
+    print("Using Linux mode")
+except FileNotFoundError:
     pass
-finally:
-    f.close()
