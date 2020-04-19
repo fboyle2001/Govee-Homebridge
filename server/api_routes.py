@@ -1,6 +1,8 @@
 from flask import request, Flask
 import json
 import bluetooth_controller as controller
+from config import config
+import pexpect
 
 class PExpectMock:
     def sendline(self, data):
@@ -43,9 +45,38 @@ class APIResponse:
         return json.dumps(self, default = lambda k: k.__dict__, sort_keys = True, indent = 2)
 
 app = Flask(__name__)
-gatt = PExpectMock() #Windows
-#import pexpect
-#gatt = pexpect.spawn("gatttool -I")
+
+gatt = PExpectMock()
+if config["linux"]:
+    gatt = pexpect.spawn("gatttool -I")
+
+@app.route("/raw")
+def raw_packet():
+    response = APIResponse()
+
+    if not config["dev_mode"]:
+        response.set_status(403, "Development mode is disabled")
+        return response.to_json()
+
+    device = request.args.get("device")
+    packet = request.args.get("packet")
+
+    if device == None:
+        response.set_status(400, "Missing device address")
+        return response.to_json()
+
+    if packet == None:
+        response.set_status(400, "Missing packet data")
+        return response.to_json()
+
+    success = controller.send_command(gatt, device, packet)
+
+    if success == True:
+        response.set_status(200)
+    else:
+        response.set_status(400, "Error sending raw packet")
+
+    return response.to_json()
 
 @app.route("/brightness")
 def change_brightness():

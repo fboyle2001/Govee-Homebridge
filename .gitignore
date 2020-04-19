@@ -1,2 +1,4 @@
 /server/config.json
 *.pyc
+*.sh
+linux_mode.config
