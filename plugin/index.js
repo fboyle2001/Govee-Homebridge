@@ -17,24 +17,12 @@ function goveeSwitch(log, config) {
   this.log = log;
   this.getUrl = url.parse(config['getUrl']);
   this.postUrl = url.parse(config['postUrl']);
-}
 
-goveeSwitch.prototype = {
-  getServices: function() {
-    let informationService = new Service.AccessoryInformation();
-    informationService.setCharacteristic(Characteristic.Manufacturer, "Govee")
-      .setCharacteristic(Characteristic.Model, "H6129")
-      .setCharacteristic(Characteristic.SerialNumber, "123-456-789");
+  this.switchService = new Service.Switch("GoveeSwitch");
+  this.switchService.getCharacteristic(Characteristic.On).on("get", this.getSwitchOnCharacteristic.bind(this)).on("set", this.setSwitchOnCharacteristic.bind(this));
 
-    let switchService = new Service.Switch("GoveeSwitch");
-    switchService.getCharacteristic(Characteristic.On)
-      .on("get", this.getSwitchOnCharacteristic.bind(this))
-      .on("set", this.setSwitchOnCharacteristic.bind(this));
-
-    this.informationService = informationService;
-    this.switchService = switchService;
-    return [informationService, switchService];
-  }
+  this.informationService = new Service.AccessoryInformation();
+  this.informationService.setCharacteristic(Characteristic.Manufacturer, "Govee").setCharacteristic(Characteristic.Model, "H6129").setCharacteristic(Characteristic.SerialNumber, "123-456-789");
 }
 
 goveeSwitch.prototype = {
@@ -70,5 +58,9 @@ goveeSwitch.prototype = {
       }
       return next();
     });
+  },
+
+  getServices: function () {
+    return [informationService, switchService];
   }
 };
