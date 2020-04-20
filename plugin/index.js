@@ -61,6 +61,6 @@ goveeSwitch.prototype = {
   },
 
   getServices: function () {
-    return [informationService, switchService];
+    return [this.informationService, this.switchService];
   }
 };
