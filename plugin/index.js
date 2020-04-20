@@ -13,6 +13,12 @@ module.exports = function(homebridge) {
 const request = require('request');
 const url = require('url');
 
+function goveeSwitch(log, config) {
+  this.log = log;
+  this.getUrl = url.parse(config['getUrl']);
+  this.postUrl = url.parse(config['postUrl']);
+}
+
 goveeSwitch.prototype = {
   getServices: function() {
     let informationService = new Service.AccessoryInformation();
@@ -29,12 +35,6 @@ goveeSwitch.prototype = {
     this.switchService = switchService;
     return [informationService, switchService];
   }
-}
-
-function goveeSwitch(log, config) {
-  this.log = log;
-  this.getUrl = url.parse(config['getUrl']);
-  this.postUrl = url.parse(config['postUrl']);
 }
 
 goveeSwitch.prototype = {
