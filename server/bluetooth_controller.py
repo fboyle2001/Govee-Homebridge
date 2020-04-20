@@ -61,3 +61,5 @@ def send_command(gatt, device, packet):
     gatt.expect(".*")
 
     return True
+
+print(GoveePacket.brightness_packet(40))
