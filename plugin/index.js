@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-var http = require('http');
->>>>>>> a5714045ec030483ea3954c827b96adb264374f9
 var Service, Characteristic;
 
 module.exports = function(homebridge) {
@@ -14,12 +10,9 @@ module.exports = function(homebridge) {
   homebridge.registerAccessory("homebridge-govee-switch", "GoveeSwitch", goveeSwitch);
 }
 
-<<<<<<< HEAD
 const request = require('request');
 const url = require('url');
 
-=======
->>>>>>> a5714045ec030483ea3954c827b96adb264374f9
 goveeSwitch.prototype = {
   getServices: function() {
     let informationService = new Service.AccessoryInformation();
@@ -27,7 +20,7 @@ goveeSwitch.prototype = {
       .setCharacteristic(Characteristic.Model, "H6129")
       .setCharacteristic(Characteristic.SerialNumber, "123-456-789");
 
-    let switchService = new Service.Switch("Govee Switch");
+    let switchService = new Service.Switch("GoveeSwitch");
     switchService.getCharacteristic(Characteristic.On)
       .on("get", this.getSwitchOnCharacteristic.bind(this))
       .on("set", this.setSwitchOnCharacteristic.bind(this));
@@ -37,7 +30,6 @@ goveeSwitch.prototype = {
     return [informationService, switchService];
   }
 }
-<<<<<<< HEAD
 
 function goveeSwitch(log, config) {
   this.log = log;
@@ -80,5 +72,3 @@ goveeSwitch.prototype = {
     });
   }
 };
-=======
->>>>>>> a5714045ec030483ea3954c827b96adb264374f9
