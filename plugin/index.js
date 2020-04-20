@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+var http = require('http');
+>>>>>>> a5714045ec030483ea3954c827b96adb264374f9
 var Service, Characteristic;
 
 module.exports = function(homebridge) {
@@ -10,9 +14,12 @@ module.exports = function(homebridge) {
   homebridge.registerAccessory("homebridge-govee-switch", "GoveeSwitch", goveeSwitch);
 }
 
+<<<<<<< HEAD
 const request = require('request');
 const url = require('url');
 
+=======
+>>>>>>> a5714045ec030483ea3954c827b96adb264374f9
 goveeSwitch.prototype = {
   getServices: function() {
     let informationService = new Service.AccessoryInformation();
@@ -30,6 +37,7 @@ goveeSwitch.prototype = {
     return [informationService, switchService];
   }
 }
+<<<<<<< HEAD
 
 function goveeSwitch(log, config) {
   this.log = log;
@@ -72,3 +80,5 @@ goveeSwitch.prototype = {
     });
   }
 };
+=======
+>>>>>>> a5714045ec030483ea3954c827b96adb264374f9
