@@ -45,7 +45,6 @@ class APIResponse:
         return json.dumps(self, default = lambda k: k.__dict__, sort_keys = True, indent = 2)
 
 app = Flask(__name__)
-
 gatt = PExpectMock()
 if config["linux"]:
     gatt = pexpect.spawn("gatttool -I")

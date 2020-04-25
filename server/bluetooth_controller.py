@@ -8,6 +8,7 @@ class GoveePacket:
 
     def set_data_byte(self, pos, intv):
         assert 0 <= intv <= 255
+        self.sig = self.sig ^ intv
         pos_val = intv << ((17 - pos) * 8)
         clear_mask = (2 ** 8) ** 20 - 1
         #need a way to wipe a byte, use an AND with 111..1000000001..111
@@ -16,7 +17,6 @@ class GoveePacket:
     def set_data(self, data):
         for index, byte in enumerate(data):
             self.set_data_byte(index, byte)
-            self.sig = self.sig ^ byte
 
     def generate(self):
         sgm_id = fix_hex_length(self.identifier, 1)
@@ -61,5 +61,3 @@ def send_command(gatt, device, packet):
     gatt.expect(".*")
 
     return True
-
-print(GoveePacket.brightness_packet(40))

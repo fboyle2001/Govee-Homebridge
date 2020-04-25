@@ -10,57 +10,32 @@ module.exports = function(homebridge) {
   homebridge.registerAccessory("homebridge-govee-switch", "GoveeSwitch", goveeSwitch);
 }
 
-const request = require('request');
 const url = require('url');
+const got = require('got');
 
-function goveeSwitch(log, config) {
+function goveeLEDStrip(log, config) {
   this.log = log;
-  this.getUrl = url.parse(config['getUrl']);
-  this.postUrl = url.parse(config['postUrl']);
 
-  this.switchService = new Service.Switch("GoveeSwitch");
-  this.switchService.getCharacteristic(Characteristic.On).on("get", this.getSwitchOnCharacteristic.bind(this)).on("set", this.setSwitchOnCharacteristic.bind(this));
-
-  this.informationService = new Service.AccessoryInformation();
-  this.informationService.setCharacteristic(Characteristic.Manufacturer, "Govee").setCharacteristic(Characteristic.Model, "H6129").setCharacteristic(Characteristic.SerialNumber, "123-456-789");
+  this.lightService = new Service.Lightbulb("Finlay's LED");
+  this.lightService.getCharacteristic(Characteristic.On);
 }
 
-goveeSwitch.prototype = {
-  getSwitchOnCharacteristic: function (next) {
-    const me = this;
-    request({
-      url: me.getUrl,
-      method: 'GET',
-    },
-    function (error, response, body) {
-      if (error) {
-        me.log('STATUS: ' + response.statusCode);
-        me.log(error.message);
-        return next(error);
-      }
-      return next(null, body.currentState);
+goveeLEDStrip.prototype = {
+  isLightOn: function(next) {
+    got("http://localhost:5000/status").then(response => {
+      this.log.log(response.body);
+      return next(null, response.body.data.status)
+    }).catch(error => {
+      this.log.log(error.response.body);
+      return next(error);
     });
   },
 
-  setSwitchOnCharacteristic: function (on, next) {
-    const me = this;
-    request({
-      url: me.postUrl,
-      body: {'targetState': on},
-      method: 'POST',
-      headers: {'Content-type': 'application/json'}
-    },
-    function (error, response) {
-      if (error) {
-        me.log('STATUS: ' + response.statusCode);
-        me.log(error.message);
-        return next(error);
-      }
-      return next();
-    });
-  },
+  toggleLight: function (next) {
+    got("http://localhost:5000/toggle").then(response => {
 
-  getServices: function () {
-    return [this.informationService, this.switchService];
+    }).catch(error => {
+
+    });
   }
-};
+}
