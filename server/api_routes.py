@@ -1,81 +1,8 @@
 from flask import request, Flask
-import json
 import bluetooth_controller as controller
-from config import config
-import pexpect
-
-class PExpectMock:
-    def sendline(self, data):
-        return True
-
-    def expect(self, data, timeout=100):
-        return True
-
-class APIResponse:
-    default_messages = {
-        200: "Success",
-        400: "Bad Request",
-        403: "Forbidden",
-        404: "Not Found",
-        410: "Gone",
-        500: "Internal Server Error"
-    }
-
-    def __init__(self, code = None, message = None):
-        if code == None:
-            self.status = dict()
-        else:
-            self.set_status(code, message)
-
-        self.data = dict()
-
-    def set_status(self, code, message = None):
-        self.status = {
-            "code": code,
-            "message": self.default_messages[code] if message == None else message
-        }
-
-    def add_data(self, key, value):
-        self.data[key] = value
-
-    def set_data(self, data):
-        self.data = data
-
-    def to_json(self):
-        return json.dumps(self, default = lambda k: k.__dict__, sort_keys = True, indent = 2)
+from api_routes_util import *
 
 app = Flask(__name__)
-gatt = PExpectMock()
-if config["linux"]:
-    gatt = pexpect.spawn("gatttool -I")
-
-@app.route("/raw")
-def raw_packet():
-    response = APIResponse()
-
-    if not config["dev_mode"]:
-        response.set_status(403, "Development mode is disabled")
-        return response.to_json()
-
-    device = request.args.get("device")
-    packet = request.args.get("packet")
-
-    if device == None:
-        response.set_status(400, "Missing device address")
-        return response.to_json()
-
-    if packet == None:
-        response.set_status(400, "Missing packet data")
-        return response.to_json()
-
-    success = controller.send_command(gatt, device, packet)
-
-    if success == True:
-        response.set_status(200)
-    else:
-        response.set_status(400, "Error sending raw packet")
-
-    return response.to_json()
 
 @app.route("/brightness")
 def change_brightness():
@@ -107,6 +34,7 @@ def change_brightness():
 
     if success == True:
         response.set_status(200)
+        get_device(device).brightness = level
     else:
         response.set_status(400, "Unable to connect to device")
 
@@ -169,7 +97,56 @@ def change_colour():
 
     if success == True:
         response.set_status(200)
+        get_device(device).colour = (r, g, b)
     else:
         response.set_status(400, "Unable to connect to device")
+
+    return response.to_json()
+    
+@app.route("/register")
+def register_device():
+    response = APIResponse()
+
+    mac = request.args.get("mac")
+    name = request.args.get("name")
+
+    if mac == None:
+        response.set_status(400, "Missing device address")
+        return response.to_json()
+
+    if name == None:
+        response.set_status(400, "Missing device name")
+        return response.to_json()
+
+    register_device(mac, name)
+    response.set_status(200, "Registered device")
+    return response.to_json()
+
+@app.route("/raw")
+def raw_packet():
+    response = APIResponse()
+
+    if not config["dev_mode"]:
+        response.set_status(403, "Development mode is disabled")
+        return response.to_json()
+
+    device = request.args.get("device")
+    packet = request.args.get("packet")
+
+    if device == None:
+        response.set_status(400, "Missing device address")
+        return response.to_json()
+
+    if packet == None:
+        response.set_status(400, "Missing packet data")
+        return response.to_json()
+
+    success = controller.send_command(gatt, device, packet)
+
+    if success == True:
+        response.set_status(200)
+        #No update to the device settings via raw packet entries
+    else:
+        response.set_status(400, "Error sending raw packet")
 
     return response.to_json()
