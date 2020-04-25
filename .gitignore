@@ -2,3 +2,5 @@
 *.pyc
 *.sh
 linux_mode.config
+node_modules/
+package-lock.json

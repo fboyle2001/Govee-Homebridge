@@ -4,10 +4,64 @@ from api_routes_util import *
 
 app = Flask(__name__)
 
+@app.route("/get_brightness")
+def get_brightness():
+    response = APIResponse()
+    device = request.args.get("device")
+
+    if device == None:
+        response.set_status(400, "Missing device address")
+        return response.to_json()
+
+    current = get_device(device).brightness
+
+    response.add_data("brightness", current)
+    response.set_status(200)
+    return response.to_json()
+
+@app.route("/status")
+def get_device_status():
+    response = APIResponse()
+    device = request.args.get("device")
+
+    if device == None:
+        response.set_status(400, "Missing device address")
+        return response.to_json()
+
+    current = get_device(device).on
+
+    response.add_data("status", current)
+    response.set_status(200)
+    return response.to_json()
+
+@app.route("/toggle")
+def toggle_light():
+    response = APIResponse()
+    device = request.args.get("device")
+
+    if device == None:
+        response.set_status(400, "Missing device address")
+        return response.to_json()
+
+    current = get_device(device).on
+    packet = controller.GoveePacket.on_packet()
+
+    if current:
+        packet = controller.GoveePacket.off_packet()
+
+    success = controller.send_command(gatt, device, packet)
+
+    if success == True:
+        response.set_status(200)
+        get_device(device).on = not current
+    else:
+        response.set_status(400, "Unable to connect to device")
+
+    return response.to_json()
+
 @app.route("/on")
 def turn_light_on():
     response = APIResponse()
-
     device = request.args.get("device")
 
     if device == None:
@@ -28,7 +82,6 @@ def turn_light_on():
 @app.route("/off")
 def turn_light_off():
     response = APIResponse()
-
     device = request.args.get("device")
 
     if device == None:
@@ -49,7 +102,6 @@ def turn_light_off():
 @app.route("/music")
 def music_mode():
     response = APIResponse()
-
     device = request.args.get("device")
     sens = request.args.get("sens")
     r = request.args.get("r")
@@ -104,7 +156,6 @@ def music_mode():
 @app.route("/temperature")
 def change_temperature():
     response = APIResponse()
-
     device = request.args.get("device")
     temperature = request.args.get("temperature")
 
@@ -135,7 +186,6 @@ def change_temperature():
 @app.route("/brightness")
 def change_brightness():
     response = APIResponse()
-
     device = request.args.get("device")
     level = request.args.get("level")
 
@@ -165,7 +215,6 @@ def change_brightness():
 @app.route("/colour")
 def change_colour():
     response = APIResponse()
-
     device = request.args.get("device")
     r = request.args.get("r")
     g = request.args.get("g")
@@ -211,7 +260,6 @@ def change_colour():
 @app.route("/register")
 def register_device():
     response = APIResponse()
-
     mac = request.args.get("mac")
     name = request.args.get("name")
 

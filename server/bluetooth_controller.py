@@ -128,6 +128,7 @@ def calculate_kelvin_rgb(kelvin):
         "b": int(b)
     }
 
+#From https://github.com/ddxtanx/GoveeAPI/blob/1b631efb77b1ea656de3647db957508a1a311034/controller.py#L30
 def send_command(gatt, device, packet):
     gatt.sendline(f"connect {device}")
 
