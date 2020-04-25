@@ -63,58 +63,30 @@ def music_mode():
     if sens == None:
         sens = 128
     else:
-        try:
-            sens = int(sens)
-        except ValueError:
-            response.set_status(400, "r must be an integer between 0 and 255")
+        sens = validate_integer(response, "sens", sens, 0, 255)
+        if sens == None:
             return response.to_json()
-
-        if sens < 0:
-            sens = 0
-        elif sens > 255:
-            sens = 255
 
     if r == None:
         r = 0
     else:
-        try:
-            r = int(r)
-        except ValueError:
-            response.set_status(400, "r must be an integer between 0 and 255")
+        r = validate_integer(response, "r", r, 0, 255)
+        if r == None:
             return response.to_json()
-
-        if r < 0:
-            r = 0
-        elif r > 255:
-            r = 255
 
     if g == None:
         g = 0
     else:
-        try:
-            g = int(g)
-        except ValueError:
-            response.set_status(400, "g must be an integer between 0 and 255")
+        g = validate_integer(response, "g", g, 0, 255)
+        if g == None:
             return response.to_json()
-
-        if g < 0:
-            g = 0
-        elif g > 255:
-            g = 255
 
     if b == None:
         b = 0
     else:
-        try:
-            b = int(b)
-        except ValueError:
-            response.set_status(400, "b must be an integer between 0 and 255")
+        b = validate_integer(response, "b", b, 0, 255)
+        if b == None:
             return response.to_json()
-
-        if b < 0:
-            b = 0
-        elif b > 255:
-            b = 255
 
     packet = controller.GoveePacket.music_mode_packet(sens, r, g, b)
     success = controller.send_command(gatt, device, packet)
@@ -144,16 +116,9 @@ def change_temperature():
         response.set_status(400, "Missing temperature")
         return response.to_json()
     else:
-        try:
-            temperature = int(temperature)
-        except ValueError:
-            response.set_status(400, "temperature must be an integer between 1001 and 6599")
+        temperature = validate_integer(response, "temperature", temperature, 1001, 6599)
+        if temperature == None:
             return response.to_json()
-
-        if temperature <= 1000:
-            temperature = 1001
-        elif temperature >= 6600:
-            temperature = 6599
 
     packet = controller.GoveePacket.temperature_packet(temperature)
     success = controller.send_command(gatt, device, packet)
@@ -182,16 +147,9 @@ def change_brightness():
         response.set_status(400, "Missing brightness level")
         return response.to_json()
     else:
-        try:
-            level = int(level)
-        except ValueError:
-            response.set_status(400, "level must be an integer between 0 and 255")
+        level = validate_integer(response, "level", level, 0, 255)
+        if level == None:
             return response.to_json()
-
-        if level <= 0:
-            level = 1
-        elif level > 255:
-            level = 255
 
     packet = controller.GoveePacket.brightness_packet(level)
     success = controller.send_command(gatt, device, packet)
@@ -220,44 +178,23 @@ def change_colour():
     if r == None:
         r = 0
     else:
-        try:
-            r = int(r)
-        except ValueError:
-            response.set_status(400, "r must be an integer between 0 and 255")
+        r = validate_integer(response, "r", r, 0, 255)
+        if r == None:
             return response.to_json()
-
-        if r < 0:
-            r = 0
-        elif r > 255:
-            r = 255
 
     if g == None:
         g = 0
     else:
-        try:
-            g = int(g)
-        except ValueError:
-            response.set_status(400, "g must be an integer between 0 and 255")
+        g = validate_integer(response, "g", g, 0, 255)
+        if g == None:
             return response.to_json()
-
-        if g < 0:
-            g = 0
-        elif g > 255:
-            g = 255
 
     if b == None:
         b = 0
     else:
-        try:
-            b = int(b)
-        except ValueError:
-            response.set_status(400, "b must be an integer between 0 and 255")
+        b = validate_integer(response, "b", b, 0, 255)
+        if b == None:
             return response.to_json()
-
-        if b < 0:
-            b = 0
-        elif b > 255:
-            b = 255
 
     packet = controller.GoveePacket.rgb_packet(r, g, b)
     success = controller.send_command(gatt, device, packet)

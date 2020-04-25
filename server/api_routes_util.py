@@ -82,3 +82,19 @@ def register_device(mac, name):
 
 def get_device(mac):
     return register_device(mac, "Govee_Light_" + str(len(device_register)))
+
+def validate_integer(response, name, value, min, max):
+    int_val = value
+
+    try:
+        int_val = int(int_val)
+    except ValueError:
+        response.set_status(400, f"{name} must be an integer between {min} and {max}")
+        return None
+
+    if int_val < min:
+        int_val = min
+    elif int_val > max:
+        int_val = max
+
+    return int_val
