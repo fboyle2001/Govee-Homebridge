@@ -70,9 +70,9 @@ def music_mode():
             return response.to_json()
 
         if sens < 0:
-            r = 0
+            sens = 0
         elif sens > 255:
-            r = 255
+            sens = 255
 
     if r == None:
         r = 0
@@ -116,8 +116,21 @@ def music_mode():
         elif b > 255:
             b = 255
 
+    packet = controller.GoveePacket.music_mode_packet(sens, r, g, b)
+    success = controller.send_command(gatt, device, packet)
+
+    if success == True:
+        response.set_status(200)
+        get_device(device).sensitivity = sens
+        get_device(device).mode = 2
+        get_device(device).colour = (r, g, b)
+    else:
+        response.set_status(400, "Unable to connect to device")
+
+    return response.to_json()
+
 @app.route("/temperature")
-def turn_off():
+def change_temperature():
     response = APIResponse()
 
     device = request.args.get("device")
@@ -148,6 +161,7 @@ def turn_off():
     if success == True:
         response.set_status(200)
         get_device(device).temperature = temperature
+        get_device(device).mode = 1
     else:
         response.set_status(400, "Unable to connect to device")
 
@@ -251,6 +265,7 @@ def change_colour():
     if success == True:
         response.set_status(200)
         get_device(device).colour = (r, g, b)
+        get_device(device).mode = 0
     else:
         response.set_status(400, "Unable to connect to device")
 

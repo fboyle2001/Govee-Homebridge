@@ -53,10 +53,11 @@ class Device:
         self.mac = mac
         self.name = name
         self.on = False
-        self.mode = mode_enum["colour"]
+        self.mode = self.mode_enum["colour"]
         self.colour = (0, 0, 0)
         self.temperature = 0
         self.brightness = 0
+        self.sensitivity = 0
 
 gatt = PExpectMock()
 if config["linux"]:
