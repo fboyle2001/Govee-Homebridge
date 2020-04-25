@@ -64,6 +64,12 @@ class GoveePacket:
         structure.set_data([1])
         return structure.generate()
 
+    @staticmethod
+    def music_mode_packet(sensitivity, r, g, b):
+        structure = GoveePacket(51)
+        structure.set_data([5, 3, 1, sensitivity, r, g, b])
+        return structure.generate()
+
 def fix_hex_length(intv, length):
     h = hex(intv).replace("0x", "")
     h = (length * 2 - len(h)) * "0" + h
