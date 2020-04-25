@@ -26,10 +26,10 @@ function goveeLEDStrip(log, config) {
   .on("get", this.isLightOn.bind(this))
   .on("set", this.toggleLight.bind(this));
   this.lightService.getCharacteristic(Characteristic.Brightness)
-  .on("get", this.getBrightness.bind(this));
+  .on("get", this.getBrightness.bind(this))
   .on("set", this.setBrightness.bind(this));
   this.lightService.getCharacteristic(Characteristic.Hue)
-  .on("get", this.getHue.bind(this));
+  .on("get", this.getHue.bind(this))
   .on("set", this.setHue.bind(this));
 }
 
