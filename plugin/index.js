@@ -31,9 +31,9 @@ function goveeLEDStrip(log, config) {
   this.lightService.getCharacteristic(Characteristic.Hue)
   .on("get", this.getHue.bind(this))
   .on("set", this.setHue.bind(this));
-  //this.lightService.getCharacteristic(Characteristic.Saturation)
-  //.on("get", this.getSaturation.bind(this))
-  //.on("set", this.setSaturation.bind(this));
+  this.lightService.getCharacteristic(Characteristic.Saturation)
+  .on("get", this.getSaturation.bind(this))
+  .on("set", this.setSaturation.bind(this));
 }
 
 goveeLEDStrip.prototype = {
@@ -55,7 +55,7 @@ goveeLEDStrip.prototype = {
   },
 
   toggleLight: function(value, next) {
-    this.log.log("Toggle Light value: " + value);
+    console.log("Toggle Light value: " + value);
     got("http://10.0.0.20:5000/toggle?device=A4:C1:38:A0:7B:19").then(response => {
       response = JSON.parse(response.body);
       console.log("TOGGLE LIGHT: ", response);
