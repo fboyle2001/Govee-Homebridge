@@ -55,7 +55,7 @@ def toggle_light():
         response.set_status(200)
         get_device(device).on = not current
     else:
-        response.set_status(504, "Unable to connect to device")
+        response.set_status(500, "Unable to connect to device")
 
     return response.to_json()
 
@@ -75,7 +75,7 @@ def turn_light_on():
         response.set_status(200)
         get_device(device).on = True
     else:
-        response.set_status(504, "Unable to connect to device")
+        response.set_status(500, "Unable to connect to device")
 
     return response.to_json()
 
@@ -95,7 +95,7 @@ def turn_light_off():
         response.set_status(200)
         get_device(device).on = False
     else:
-        response.set_status(504, "Unable to connect to device")
+        response.set_status(500, "Unable to connect to device")
 
     return response.to_json()
 
