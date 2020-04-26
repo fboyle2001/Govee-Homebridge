@@ -81,7 +81,7 @@ def register_led_device(mac, name):
     return device
 
 def get_device(mac):
-    return register_device(mac, "Govee_Light_" + str(len(device_register)))
+    return register_led_device(mac, "Govee_Light_" + str(len(device_register)))
 
 def validate_integer(response, name, value, min, max):
     int_val = value
