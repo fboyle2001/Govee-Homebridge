@@ -277,7 +277,7 @@ def register_device():
         response.set_status(400, "Missing device name")
         return response.to_json()
 
-    register_device(mac, name)
+    register_led_device(mac, name)
     response.set_status(200, "Registered device")
     return response.to_json()
 
