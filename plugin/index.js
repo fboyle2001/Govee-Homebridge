@@ -40,54 +40,64 @@ function goveeLEDStrip(log, config) {
 
 goveeLEDStrip.prototype = {
   initialise: function() {
-    got("http://10.0.0.20:5000/register?mac=A4:C1:38:A0:7B:19&name=LED%20Strip");
+    (async() => {
+      got("http://10.0.0.20:5000/register?mac=A4:C1:38:A0:7B:19&name=LED%20Strip");
+    })();
     this.toggleLight(false, function (error, value) {});
   },
 
   isLightOn: function(next) {
-    got("http://10.0.0.20:5000/status?device=A4:C1:38:A0:7B:19").then(response => {
-      response = JSON.parse(response.body);
-      console.log("IS LIGHT ON: ", response);
-      return next(null, response.data.status);
-    }).catch(error => {
-      console.log(error.response.body);
-      return next(error);
-    });
+    (async() => {
+      got("http://10.0.0.20:5000/status?device=A4:C1:38:A0:7B:19").then(response => {
+        response = JSON.parse(response.body);
+        console.log("IS LIGHT ON: ", response);
+        return next(null, response.data.status);
+      }).catch(error => {
+        console.log(error.response.body);
+        return next(error);
+      });
+    })();
   },
 
   toggleLight: function(value, next) {
     if(value == false) {
       console.log("Turning light off");
-      got("http://10.0.0.20:5000/off?device=A4:C1:38:A0:7B:19").then(response => {
-        response = JSON.parse(response.body);
-        console.log("OFF LIGHT: ", response);
-        return next(null);
-      }).catch(error => {
-        console.log(error.response.body);
-        return next(error);
-      });
+      (async() => {
+        got("http://10.0.0.20:5000/off?device=A4:C1:38:A0:7B:19").then(response => {
+          response = JSON.parse(response.body);
+          console.log("OFF LIGHT: ", response);
+          return next(null);
+        }).catch(error => {
+          console.log(error.response.body);
+          return next(error);
+        });
+      })();
     } else {
       console.log("Turning light on");
-      got("http://10.0.0.20:5000/on?device=A4:C1:38:A0:7B:19").then(response => {
-        response = JSON.parse(response.body);
-        console.log("ON LIGHT: ", response);
-        return next(null);
-      }).catch(error => {
-        console.log(error.response.body);
-        return next(error);
-      });
+      (async() => {
+        got("http://10.0.0.20:5000/on?device=A4:C1:38:A0:7B:19").then(response => {
+          response = JSON.parse(response.body);
+          console.log("ON LIGHT: ", response);
+          return next(null);
+        }).catch(error => {
+          console.log(error.response.body);
+          return next(error);
+        });
+      })();
     }
   },
 
   getBrightness: function(next) {
-    got("http://10.0.0.20:5000/get_brightness?device=A4:C1:38:A0:7B:19").then(response => {
-      response = JSON.parse(response.body);
-      console.log("GET BRIGHTNESS: ", response);
-      return next(null, response.data.brightness);
-    }).catch(error => {
-      console.log(error.response.body);
-      return next(error);
-    });
+    (async() => {
+      got("http://10.0.0.20:5000/get_brightness?device=A4:C1:38:A0:7B:19").then(response => {
+        response = JSON.parse(response.body);
+        console.log("GET BRIGHTNESS: ", response);
+        return next(null, response.data.brightness);
+      }).catch(error => {
+        console.log(error.response.body);
+        return next(error);
+      });
+    })();
   },
 
   setBrightness: function(value, next) {
@@ -99,14 +109,16 @@ goveeLEDStrip.prototype = {
       int_value = 0;
     }
 
-    got("http://10.0.0.20:5000/brightness?device=A4:C1:38:A0:7B:19&level=" + int_value).then(response => {
-      response = JSON.parse(response.body);
-      console.log("SET BRIGHTNESS: ", response);
-      return next(null);
-    }).catch(error => {
-      console.log(error.response.body);
-      return next(error);
-    });
+    (async() => {
+      got("http://10.0.0.20:5000/brightness?device=A4:C1:38:A0:7B:19&level=" + int_value).then(response => {
+        response = JSON.parse(response.body);
+        console.log("SET BRIGHTNESS: ", response);
+        return next(null);
+      }).catch(error => {
+        console.log(error.response.body);
+        return next(error);
+      });
+    })();
   },
 
   getHue: function(next) {
