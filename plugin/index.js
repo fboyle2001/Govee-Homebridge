@@ -39,7 +39,7 @@ goveeLEDStrip.prototype = {
   isLightOn: function(next) {
     got("http://10.0.0.20:5000/status?device=A4:C1:38:A0:7B:19").then(response => {
       response = JSON.parse(response.body)
-      this.log.log(response);
+      console.log("IS LIGHT ON: " + response);
       return next(null, response.data.status);
     }).catch(error => {
       this.log.log(error.response.body);
@@ -51,7 +51,7 @@ goveeLEDStrip.prototype = {
     this.log.log("Toggle Light value: " + value);
     got("http://10.0.0.20:5000/toggle?device=A4:C1:38:A0:7B:19").then(response => {
       response = JSON.parse(response.body);
-      this.log.log(response);
+      console.log("TOGGLE LIGHT: " + response);
       return next(null);
     }).catch(error => {
       this.log.log(error.response.body);
@@ -62,7 +62,7 @@ goveeLEDStrip.prototype = {
   getBrightness: function(next) {
     got("http://10.0.0.20:5000/get_brightness?device=A4:C1:38:A0:7B:19").then(response => {
       response = JSON.parse(response.body);
-      this.log.log(response);
+      console.log("GET BRIGHTNESS: " + response);
       return next(null, response.data.brightness);
     }).catch(error => {
       this.log.log(error.response.body);
@@ -73,7 +73,7 @@ goveeLEDStrip.prototype = {
   setBrightness: function(value, next) {
     got("http://10.0.0.20:5000/brightness?device=A4:C1:38:A0:7B:19&level=" + value).then(response => {
       response = JSON.parse(response.body);
-      this.log.log(response);
+      console.log("SET BRIGHTNESS: " + response);
       return next(null);
     }).catch(error => {
       this.log.log(error.response.body);
@@ -82,10 +82,11 @@ goveeLEDStrip.prototype = {
   },
 
   getHue: function(next) {
+    console.log("GET HUE WAS CALLED");
   },
 
   setHue: function(value, next) {
-    console.log(value);
+    console.log("SET HUE WAS CALLED");
     return next(null);
   },
 
