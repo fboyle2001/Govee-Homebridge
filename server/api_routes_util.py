@@ -66,7 +66,7 @@ if config["linux"]:
 device_register = dict()
 resolved_macs = dict()
 
-def register_device(mac, name):
+def register_led_device(mac, name):
     if mac in resolved_macs.keys():
         resolved_name = resolved_macs[mac]
 
