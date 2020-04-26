@@ -21,8 +21,10 @@ got("http://10.0.0.20:5000/on?device=A4:C1:38:A0:7B:19").then(a => {
     }
     console.log("Double failure");
   }).catch(error => {
+    console.log("Errored #2");
     console.log(error);
   });
 }).catch(error => {
+  console.log("Errored #1");
   console.log(error);
 });
