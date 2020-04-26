@@ -31,9 +31,9 @@ function goveeLEDStrip(log, config) {
   this.lightService.getCharacteristic(Characteristic.Hue)
   .on("get", this.getHue.bind(this))
   .on("set", this.setHue.bind(this));
-  this.lightService.getCharacteristic(Characteristic.Saturation)
-  .on("get", this.getSaturation.bind(this))
-  .on("set", this.setSaturation.bind(this));
+  //this.lightService.getCharacteristic(Characteristic.Saturation)
+  //.on("get", this.getSaturation.bind(this))
+  //.on("set", this.setSaturation.bind(this));
 }
 
 goveeLEDStrip.prototype = {
