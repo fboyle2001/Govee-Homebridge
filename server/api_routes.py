@@ -55,7 +55,7 @@ def toggle_light():
         response.set_status(200)
         get_device(device).on = not current
     else:
-        response.set_status(400, "Unable to connect to device")
+        response.set_status(504, "Unable to connect to device")
 
     return response.to_json()
 
@@ -75,7 +75,7 @@ def turn_light_on():
         response.set_status(200)
         get_device(device).on = True
     else:
-        response.set_status(400, "Unable to connect to device")
+        response.set_status(504, "Unable to connect to device")
 
     return response.to_json()
 
@@ -95,7 +95,7 @@ def turn_light_off():
         response.set_status(200)
         get_device(device).on = False
     else:
-        response.set_status(400, "Unable to connect to device")
+        response.set_status(504, "Unable to connect to device")
 
     return response.to_json()
 
@@ -149,7 +149,7 @@ def music_mode():
         get_device(device).mode = 2
         get_device(device).colour = (r, g, b)
     else:
-        response.set_status(400, "Unable to connect to device")
+        response.set_status(504, "Unable to connect to device")
 
     return response.to_json()
 
@@ -179,7 +179,7 @@ def change_temperature():
         get_device(device).temperature = temperature
         get_device(device).mode = 1
     else:
-        response.set_status(400, "Unable to connect to device")
+        response.set_status(504, "Unable to connect to device")
 
     return response.to_json()
 
@@ -208,7 +208,7 @@ def change_brightness():
         response.set_status(200)
         get_device(device).brightness = level
     else:
-        response.set_status(400, "Unable to connect to device")
+        response.set_status(504, "Unable to connect to device")
 
     return response.to_json()
 
@@ -253,7 +253,7 @@ def change_colour():
         get_device(device).colour = (r, g, b)
         get_device(device).mode = 0
     else:
-        response.set_status(400, "Unable to connect to device")
+        response.set_status(504, "Unable to connect to device")
 
     return response.to_json()
 
@@ -300,6 +300,6 @@ def raw_packet():
         response.set_status(200)
         #No update to the device settings via raw packet entries
     else:
-        response.set_status(400, "Error sending raw packet")
+        response.set_status(504, "Error sending raw packet")
 
     return response.to_json()
