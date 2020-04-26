@@ -4,6 +4,12 @@ from api_routes_util import *
 
 app = Flask(__name__)
 
+@app.route("/error_generate/500")
+def test_r():
+    response = APIResponse()
+    response.set_status(500)
+    return response.to_json()
+
 @app.route("/get_brightness")
 def get_brightness():
     response = APIResponse()
@@ -149,7 +155,7 @@ def music_mode():
         get_device(device).mode = 2
         get_device(device).colour = (r, g, b)
     else:
-        response.set_status(504, "Unable to connect to device")
+        response.set_status(500, "Unable to connect to device")
 
     return response.to_json()
 
@@ -179,7 +185,7 @@ def change_temperature():
         get_device(device).temperature = temperature
         get_device(device).mode = 1
     else:
-        response.set_status(504, "Unable to connect to device")
+        response.set_status(500, "Unable to connect to device")
 
     return response.to_json()
 
@@ -208,7 +214,7 @@ def change_brightness():
         response.set_status(200)
         get_device(device).brightness = level
     else:
-        response.set_status(504, "Unable to connect to device")
+        response.set_status(500, "Unable to connect to device")
 
     return response.to_json()
 
@@ -253,7 +259,7 @@ def change_colour():
         get_device(device).colour = (r, g, b)
         get_device(device).mode = 0
     else:
-        response.set_status(504, "Unable to connect to device")
+        response.set_status(500, "Unable to connect to device")
 
     return response.to_json()
 
@@ -300,6 +306,6 @@ def raw_packet():
         response.set_status(200)
         #No update to the device settings via raw packet entries
     else:
-        response.set_status(504, "Error sending raw packet")
+        response.set_status(500, "Error sending raw packet")
 
     return response.to_json()
