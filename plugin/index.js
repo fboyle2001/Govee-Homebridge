@@ -15,6 +15,8 @@ const got = require('got');
 
 function goveeLEDStrip(log, config) {
   this.log = log;
+  console.log("This message is in the console log");
+  this.log.log("This message in in the other log");
 
   this.informationService = new Service.AccessoryInformation();
   this.informationService.setCharacteristic(Characteristic.Manufacturer, "Govee");
