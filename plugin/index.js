@@ -39,7 +39,7 @@ function goveeLEDStrip(log, config) {
 }
 
 goveeLEDStrip.prototype = {
-  initialise(): function() {
+  initialise: function() {
     got("http://10.0.0.20:5000/register?mac=A4:C1:38:A0:7B:19&name=LED%20Strip");
     this.toggleLight(false, function (error, value) {});
   },
