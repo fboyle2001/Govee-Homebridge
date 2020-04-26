@@ -40,7 +40,7 @@ class APIResponse:
         self.data = data
 
     def to_json(self):
-        return json.dumps(self, default = lambda k: k.__dict__, sort_keys = True, indent = 2)
+        return json.dumps(self, default = lambda k: k.__dict__, sort_keys = True, indent = 2), self.code
 
 class Device:
     mode_enum = {

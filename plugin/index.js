@@ -55,7 +55,14 @@ goveeLEDStrip.prototype = {
   },
 
   toggleLight: function(value, next) {
-    console.log("Toggle Light value: " + value);
+    if(value == false) {
+      console.log("Turning light off");
+
+      got("http://10.0.0.20:5000/off?device=A4:C1:38:A0:7B:19")
+    } else {
+      console.log("Turning light on");
+    }
+
     got("http://10.0.0.20:5000/toggle?device=A4:C1:38:A0:7B:19").then(response => {
       response = JSON.parse(response.body);
       console.log("TOGGLE LIGHT: ", response);

@@ -1,11 +1,24 @@
 const got = require('got');
 
-console.log("test")
-got("http://127.0.0.1:5000/colour?device=a&r=200").then(response => {
-  response = JSON.parse(response.body)
-  console.log("response")
-  console.log(response.status.code)
-}).catch(error => {
-  console.log("error")
-  console.log(error)
+let status_code = 0;
+
+function attempt(url) {
+  return ;
+}
+
+got("http://10.0.0.20:5000/off?device=A4:C1:38:A0:7B:19").then(a => {
+  a = JSON.parse(a.body);
+  console.log(a.status.code);
+  if(a.status.code == 200) {
+    return;
+  }
+  console.log("Single failure");
+  got("http://10.0.0.20:5000/off?device=A4:C1:38:A0:7B:19").then(b => {
+    b = JSON.parse(b.body);
+    console.log(b.status.code);
+    if(b.status.code == 200) {
+      return;
+    }
+    console.log("Double failure");
+  });
 });
