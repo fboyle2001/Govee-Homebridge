@@ -45,8 +45,8 @@ class DevicePacketProcessor:
         self.waiting_packets = Queue()
         self.active = False
         self.processing_thread = None
-        self.send_alive_packet_period = 1.5
-        self.delay_packet_period = 0.1
+        self.send_alive_packet_period = 1.0
+        self.delay_packet_period = 0.05
         self.max_connect_attempts = 5
 
     def queue_packet(self, packet, callback, value):
