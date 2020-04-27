@@ -110,7 +110,6 @@ goveeLEDStrip.prototype = {
         return next(error);
       });
     })();
-    return next(null);
   },
 
   getSaturation: function(next) {
