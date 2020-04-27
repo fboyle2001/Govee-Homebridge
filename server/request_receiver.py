@@ -65,7 +65,7 @@ def hue_saturation_update():
 
 def update_colour_callback(device, colour):
     device.colour = colour
-    logger.info(f"Colour packet sent to {device.mac}. Callback called, updated cplour value to {colour}")
+    logger.info(f"Colour packet sent to {device.mac}. Callback called, updated colour value to {colour}")
 
 @app.route("/api/update/on")
 def turn_light_on():
