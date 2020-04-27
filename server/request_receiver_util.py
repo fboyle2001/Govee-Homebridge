@@ -22,13 +22,10 @@ class APIResponse:
             "message": self.default_messages[code] if message == None else message
         }
 
-    def add_data(self, key, value):
+    def set_data(self, key, value):
         self.data[key] = value
 
-    def set_data(self, data):
-        self.data = data
-
-    def to_json(self):
+    def display(self):
         return json.dumps(self, default = lambda k: k.__dict__, sort_keys = True, indent = 2), self.status["code"]
 
 def validate_integer(response, name, value, min, max):

@@ -1,8 +1,8 @@
-import threading
 from queue import Queue
+from config import config
+import threading
 import packets
 import pexpect
-from config import config
 import time
 
 class PExpectMock:
@@ -32,8 +32,8 @@ class DevicePacketProcessor:
         self.delay_packet_period = 0.05
         self.max_connect_attempts = 5
 
-    def queue_packet(self, packet, callback):
-        self.waiting_packets.put((packet, callback))
+    def queue_packet(self, packet, callback, value):
+        self.waiting_packets.put((packet, callback, value))
 
     def stop_processing(self):
         self.active = False
@@ -65,11 +65,12 @@ class DevicePacketProcessor:
 
         while self.active:
             while self.waiting_packets.qsize() != 0:
-                packet, callback = self.waiting_packets.get()
+                packet, callback, value = self.waiting_packets.get()
                 gatt_instance.sendline(f"char-write-cmd 0x0015 {packet}")
                 gatt_instance.expect(".*")
                 self.waiting_packets.task_done()
-                callback(self.device)
+                if callback != None:
+                    callback(self.device, value)
                 time.sleep(self.delay_packet_period)
 
             gatt_instance.sendline(packets.GoveePacket.keep_alive_packet())
