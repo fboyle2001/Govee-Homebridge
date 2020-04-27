@@ -90,6 +90,8 @@ class DevicePacketProcessor:
             raise ConnectionError("Unable to connect to " + self.device.mac)
 
         while self.active:
+            sent_packets = 0
+
             while self.waiting_packets.qsize() != 0:
                 packet, callback, value = self.waiting_packets.get()
                 logger.debug(f"Found {packet} to send to {self.device.mac}")
@@ -97,18 +99,23 @@ class DevicePacketProcessor:
                 gatt_instance.expect(".*")
                 self.waiting_packets.task_done()
                 logger.debug(f"Sent {packet} to {self.device.mac}")
+                logger.debug(f"Last response: {gatt_instance.before}")
                 if callback != None:
                     callback(self.device, value)
+                sent_packets += 1
                 time.sleep(self.delay_packet_period)
 
             logger.debug(f"Depleted waiting packet queue for {self.device.mac}")
 
             gatt_instance.sendline(packets.GoveePacket.keep_alive_packet())
             gatt_instance.expect(".*")
+            logger.debug(f"Last response: {gatt_instance.before}")
 
             logger.debug(f"Sent keep alive packet to {self.device.mac}")
 
-            time.sleep(self.send_alive_packet_period)
+            sleep_period = max(self.delay_packet_period, self.send_alive_packet_period - sent_packets * self.delay_packet_period)
+
+            time.sleep(sleep_period)
 
         gatt_instance.sendline("disconnect")
         gatt_instance.expect(".*")
