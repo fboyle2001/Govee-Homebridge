@@ -37,6 +37,7 @@ class Device:
         self.packet_processor = DevicePacketProcessor(self)
         self.on = False
         self.brightness = 0
+        self.colour = (0, 0, 0)
 
 class DevicePacketProcessor:
     def __init__(self, device):
