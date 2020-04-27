@@ -47,13 +47,13 @@ goveeLEDStrip.prototype = {
   },
 
   toggleLight: function(value, next) {
+    this.on = value;
     if(value == false) {
       console.log("Turning light off");
       (async() => {
         got("http://10.0.0.20:5000/api/update/off?mac=A4:C1:38:A0:7B:19").then(response => {
           response = JSON.parse(response.body);
           console.log("OFF LIGHT: ", response);
-          this.on = value;
           return next(null);
         }).catch(error => {
           console.log(error);
@@ -66,7 +66,6 @@ goveeLEDStrip.prototype = {
         got("http://10.0.0.20:5000/api/update/on?mac=A4:C1:38:A0:7B:19").then(response => {
           response = JSON.parse(response.body);
           console.log("ON LIGHT: ", response);
-          this.on = value;
           return next(null);
         }).catch(error => {
           console.log(error);
@@ -81,11 +80,11 @@ goveeLEDStrip.prototype = {
   },
 
   setBrightness: function(value, next) {
+    this.brightness = brightness;
     (async() => {
       got("http://10.0.0.20:5000/api/update/brightness?mac=A4:C1:38:A0:7B:19&brightness=" + value).then(response => {
         response = JSON.parse(response.body);
         console.log("SET BRIGHTNESS: ", response);
-        this.brightness = brightness;
         return next(null);
       }).catch(error => {
         console.log(error);
@@ -100,11 +99,11 @@ goveeLEDStrip.prototype = {
   },
 
   setHue: function(value, next) {
+    this.hue = value;
     (async() => {
       got("http://10.0.0.20:5000/api/update/hs?mac=A4:C1:38:A0:7B:19&hue=" + value + "&saturation=" + this.saturation).then(response => {
         response = JSON.parse(response.body);
         console.log("SET HUE: ", response);
-        this.hue = value;
         return next(null);
       }).catch(error => {
         console.log(error);
