@@ -1,6 +1,3 @@
-import pexpect
-import math
-
 class GoveePacket:
     def __init__(self, identifier):
         self.identifier = identifier
@@ -39,6 +36,10 @@ class GoveePacket:
         trgb = calculate_kelvin_rgb(kelvin)
         structure.set_data([5, 2, 255, 255, 255, 1, trgb["r"], trgb["g"], trgb["b"]])
         return structure.generate()
+
+    @staticmethod
+    def hsb_packet(hue, saturation, brightness):
+        pass
 
     @staticmethod
     def brightness_packet(level):
@@ -127,19 +128,3 @@ def calculate_kelvin_rgb(kelvin):
         "g": int(g),
         "b": int(b)
     }
-
-#From https://github.com/ddxtanx/GoveeAPI/blob/1b631efb77b1ea656de3647db957508a1a311034/controller.py#L30
-def send_command(gatt, device, packet):
-    gatt.sendline(f"connect {device}")
-
-    try:
-        gatt.expect("Connection successful", timeout=5)
-    except pexpect.exceptions.TIMEOUT:
-        return False
-
-    gatt.sendline(f"char-write-cmd 0x0015 {packet}")
-    gatt.expect(".*")
-    gatt.sendline("disconnect")
-    gatt.expect(".*")
-
-    return True
