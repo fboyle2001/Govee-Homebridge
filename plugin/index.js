@@ -34,38 +34,21 @@ function goveeLEDStrip(log, config) {
   this.lightService.getCharacteristic(Characteristic.Saturation)
   .on("get", this.getSaturation.bind(this))
   .on("set", this.setSaturation.bind(this));
-
-  this.initialise();
 }
 
 goveeLEDStrip.prototype = {
-  initialise: function() {
-    (async() => {
-      got("http://10.0.0.20:5000/register?mac=A4:C1:38:A0:7B:19&name=LED%20Strip");
-    })();
-    this.toggleLight(false, function (error, value) {});
-  },
-
   isLightOn: function(next) {
-    (async() => {
-      got("http://10.0.0.20:5000/status?device=A4:C1:38:A0:7B:19").then(response => {
-        response = JSON.parse(response.body);
-        console.log("IS LIGHT ON: ", response);
-        return next(null, response.data.status);
-      }).catch(error => {
-        console.log(error.response.body);
-        return next(error);
-      });
-    })();
+    return next(null, this.on);
   },
 
   toggleLight: function(value, next) {
     if(value == false) {
       console.log("Turning light off");
       (async() => {
-        got("http://10.0.0.20:5000/off?device=A4:C1:38:A0:7B:19").then(response => {
+        got("http://10.0.0.20:5000/api/update/off?device=A4:C1:38:A0:7B:19").then(response => {
           response = JSON.parse(response.body);
           console.log("OFF LIGHT: ", response);
+          this.on = value;
           return next(null);
         }).catch(error => {
           console.log(error.response.body);
@@ -75,9 +58,10 @@ goveeLEDStrip.prototype = {
     } else {
       console.log("Turning light on");
       (async() => {
-        got("http://10.0.0.20:5000/on?device=A4:C1:38:A0:7B:19").then(response => {
+        got("http://10.0.0.20:5000/api/update/on?device=A4:C1:38:A0:7B:19").then(response => {
           response = JSON.parse(response.body);
           console.log("ON LIGHT: ", response);
+          this.on = value;
           return next(null);
         }).catch(error => {
           console.log(error.response.body);
@@ -88,23 +72,15 @@ goveeLEDStrip.prototype = {
   },
 
   getBrightness: function(next) {
-    (async() => {
-      got("http://10.0.0.20:5000/get_brightness?device=A4:C1:38:A0:7B:19").then(response => {
-        response = JSON.parse(response.body);
-        console.log("GET BRIGHTNESS: ", response);
-        return next(null, response.data.brightness);
-      }).catch(error => {
-        console.log(error.response.body);
-        return next(error);
-      });
-    })();
+    return next(null, this.brightness);
   },
 
   setBrightness: function(value, next) {
     (async() => {
-      got("http://10.0.0.20:5000/brightness?device=A4:C1:38:A0:7B:19&level=" + value).then(response => {
+      got("http://10.0.0.20:5000/api/update/brightness?device=A4:C1:38:A0:7B:19&brightness=" + value).then(response => {
         response = JSON.parse(response.body);
         console.log("SET BRIGHTNESS: ", response);
+        this.brightness = brightness;
         return next(null);
       }).catch(error => {
         console.log(error.response.body);
@@ -115,23 +91,31 @@ goveeLEDStrip.prototype = {
 
   getHue: function(next) {
     console.log("GET HUE WAS CALLED");
-    return next(0, null);
+    return next(null, this.hue);
   },
 
   setHue: function(value, next) {
-    console.log("SET HUE WAS CALLED");
-    console.log("PROVIDED VALUE WAS: ", value);
+    (async() => {
+      got("http://10.0.0.20:5000/api/update/hs?device=A4:C1:38:A0:7B:19&hue=" + value + "&saturation=" + this.saturation).then(response => {
+        response = JSON.parse(response.body);
+        console.log("SET HUE: ", response);
+        this.hue = value;
+        return next(null);
+      }).catch(error => {
+        console.log(error.response.body);
+        return next(error);
+      });
+    })();
     return next(null);
   },
 
   getSaturation: function(next) {
     console.log("GET SATURATION WAS CALLED");
-    return next(0, null);
+    return next(null, this.saturation);
   },
 
   setSaturation: function(value, next) {
-    console.log("SET SATURATION WAS CALLED");
-    console.log("PROVIDED VALUE WAS: ", value);
+    this.saturation = value;
     return next(null);
   },
 

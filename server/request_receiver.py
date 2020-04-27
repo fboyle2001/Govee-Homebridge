@@ -160,3 +160,20 @@ def get_brightness():
     logger.info(f"Read brightness for {mac}, sending 200 response")
 
     return response.display()
+
+@app.route("/api/read/status")
+def get_light_status():
+    response = APIResponse()
+    mac = request.args.get("mac")
+
+    if mac == None:
+        logger.warning("Rejected request to read status: missing MAC address")
+        response.set_status(400, "Missing MAC address")
+        return response.display()
+
+    device = device_handler.get_device(mac)
+    response.set_status(200)
+    response.set_data("status", device.on)
+    logger.info(f"Read status for {mac}, sending 200 response")
+
+    return response.display()
