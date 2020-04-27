@@ -80,7 +80,7 @@ goveeLEDStrip.prototype = {
   },
 
   setBrightness: function(value, next) {
-    this.brightness = brightness;
+    this.brightness = value;
     (async() => {
       got("http://10.0.0.20:5000/api/update/brightness?mac=A4:C1:38:A0:7B:19&brightness=" + value).then(response => {
         response = JSON.parse(response.body);
