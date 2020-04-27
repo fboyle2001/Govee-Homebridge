@@ -45,8 +45,8 @@ class DevicePacketProcessor:
         self.waiting_packets = Queue()
         self.active = False
         self.processing_thread = None
-        self.send_alive_packet_period = 1.0
-        self.delay_packet_period = 0.05
+        self.send_alive_packet_period = 2.00
+        self.delay_packet_period = 0.10
         self.max_connect_attempts = 5
 
     def queue_packet(self, packet, callback, value):
@@ -95,6 +95,9 @@ class DevicePacketProcessor:
             sent_packets = 0
 
             while self.waiting_packets.qsize() != 0:
+                if sent_packets >= 16:
+                    break
+
                 packet, callback, value = self.waiting_packets.get()
                 logger.debug(f"Found {packet} to send to {self.device.mac}")
                 gatt_instance.sendline(f"char-write-cmd 0x0015 {packet}")
@@ -114,10 +117,7 @@ class DevicePacketProcessor:
             logger.debug(f"Last response: {gatt_instance.before}")
 
             logger.debug(f"Sent keep alive packet to {self.device.mac}")
-
-            sleep_period = max(self.delay_packet_period, self.send_alive_packet_period - sent_packets * self.delay_packet_period)
-
-            time.sleep(sleep_period)
+            time.sleep(self.send_alive_packet_period)
 
         gatt_instance.sendline("disconnect")
         gatt_instance.expect(".*")
