@@ -43,3 +43,39 @@ def validate_integer(response, name, value, min, max):
         int_val = max
 
     return int_val
+
+#https://gist.github.com/mjackson/5311256
+def hsl_to_rgb_helper(p, q, t):
+    if t < 0:
+        t += 1
+    elif t > 1:
+        t -= 1
+
+    if t < 1/6:
+        return p + (q - p) * 6 * t
+    elif t < 1/2:
+        return q
+    elif t < 2/3:
+        return p + (q - p) * (2/3 - t) * 6
+
+    return p
+
+#https://gist.github.com/mjackson/5311256
+def hsl_to_rgb(h, s, l):
+    if s == 0:
+        return 0, 0, 0
+
+    q = l + s - l * s
+
+    if l < 0.5:
+        q = l * (1 + s)
+
+    p = 2 * l - q
+
+    print(p, q)
+
+    r = hsl_to_rgb_helper(p, q, h + 1/3) * 255
+    g = hsl_to_rgb_helper(p, q, h) * 255
+    b = hsl_to_rgb_helper(p, q, h - 1/3) * 255
+
+    return int(r), int(g), int(b)

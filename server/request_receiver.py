@@ -23,6 +23,50 @@ file_handler.setFormatter(file_format)
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
 
+@app.route("/api/update/hs")
+def hue_saturation_update():
+    response = APIResponse()
+    mac = request.args.get("mac")
+    hue = request.args.get("hue")
+    saturation = request.args.get("saturation")
+
+    if mac == None:
+        logger.warning("Rejected request to change colour: missing MAC address")
+        response.set_status(400, "Missing MAC address")
+        return response.display()
+
+    if hue == None:
+        logger.warning("Rejected request to change colour: missing hue")
+        response.set_status(400, "Missing hue")
+        return response.display()
+    else:
+        hue = validate_integer(response, "hue", hue, 0, 360)
+        if hue == None:
+            return response.display()
+
+    if saturation == None:
+        logger.warning("Rejected request to change colour: missing saturation")
+        response.set_status(400, "Missing saturation")
+        return response.display()
+    else:
+        saturation = validate_integer(response, "saturation", saturation, 0, 100)
+        if saturation == None:
+            return response.display()
+
+    device = device_handler.get_device(mac)
+    brightness = device.brightness
+    r, g, b = hsl_to_rgb(hue / 360, saturation / 100, brightness / 100)
+    packet = packets.GoveePacket.rgb_packet(r, g, b)
+    device.packet_processor.queue_packet(packet, update_colour_callback, (r, g, b))
+    response.set_status(200)
+    logger.info(f"Queued colour packet for {mac} and sending 200 response")
+
+    return response.display()
+
+def update_colour_callback(device, colour):
+    device.colour = colour
+    logger.info(f"Colour packet sent to {device.mac}. Callback called, updated cplour value to {colour}")
+
 @app.route("/api/update/on")
 def turn_light_on():
     response = APIResponse()
@@ -83,7 +127,7 @@ def update_brightness():
         response.set_status(400, "Missing brightness")
         return response.display()
     else:
-        brightness = validate_integer(response, "brightness", brightness, 0, 255)
+        brightness = validate_integer(response, "brightness", brightness, 0, 100)
         if brightness == None:
             return response.display()
 
@@ -97,6 +141,7 @@ def update_brightness():
 
 def update_brightness_callback(device, brightness):
     device.brightness = brightness
+    device.on = True
     logger.info(f"Brightness packet sent to {device.mac}. Callback called, updated brightness value to {brightness}")
 
 @app.route("/api/read/brightness")

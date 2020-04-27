@@ -38,10 +38,6 @@ class GoveePacket:
         return structure.generate()
 
     @staticmethod
-    def hsb_packet(hue, saturation, brightness):
-        pass
-
-    @staticmethod
     def brightness_packet(level):
         structure = GoveePacket(51)
         structure.set_data([4, level])

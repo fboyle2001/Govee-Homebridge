@@ -44,11 +44,13 @@ class DevicePacketProcessor:
         self.waiting_packets = Queue()
         self.active = False
         self.processing_thread = None
-        self.send_alive_packet_period = 1.50
-        self.delay_packet_period = 1.50
-        self.max_connect_attempts = 5
-        self.max_total_loops = 8
-        self.max_empty_loops = 4
+
+        self.send_alive_packet_period = 1.0
+        self.delay_packet_period =      1.0
+
+        self.max_total_loops =          6
+        self.max_empty_loops =          2
+        self.max_connect_attempts =     5
 
     def queue_packet(self, packet, callback, value):
         self.waiting_packets.put((packet, callback, value))
@@ -115,7 +117,6 @@ class DevicePacketProcessor:
                 sent_bytes = gatt_instance.sendline(f"char-write-cmd 0x0015 {packet}")
                 logger.debug(f"Sent {sent_bytes} in {packet} to {self.device.mac}")
                 k = gatt_instance.expect(".*")
-                logger.debug(f"PACKET {k}")
                 self.waiting_packets.task_done()
                 logger.debug(f"Sent {packet} to {self.device.mac}")
                 if callback != None:

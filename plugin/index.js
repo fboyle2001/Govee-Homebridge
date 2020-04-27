@@ -101,16 +101,8 @@ goveeLEDStrip.prototype = {
   },
 
   setBrightness: function(value, next) {
-    int_value = Math.round((value / 100) * 255);
-
-    if(int_value > 255) {
-      int_value = 255;
-    } else if(int_value < 0) {
-      int_value = 0;
-    }
-
     (async() => {
-      got("http://10.0.0.20:5000/brightness?device=A4:C1:38:A0:7B:19&level=" + int_value).then(response => {
+      got("http://10.0.0.20:5000/brightness?device=A4:C1:38:A0:7B:19&level=" + value).then(response => {
         response = JSON.parse(response.body);
         console.log("SET BRIGHTNESS: ", response);
         return next(null);
