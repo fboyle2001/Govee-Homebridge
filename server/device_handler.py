@@ -47,6 +47,8 @@ class DevicePacketProcessor:
         self.send_alive_packet_period = 1.50
         self.delay_packet_period = 1.50
         self.max_connect_attempts = 5
+        self.max_total_loops = 8
+        self.max_empty_loops = 4
 
     def queue_packet(self, packet, callback, value):
         self.waiting_packets.put((packet, callback, value))
@@ -68,6 +70,7 @@ class DevicePacketProcessor:
     def process_packets(self):
         self.active = True
         gatt_instance = PExpectMock()
+
         if config["linux"]:
             logger.debug(f"Using Linux configuration so using gatttool")
             gatt_instance = pexpect.spawn("gatttool -I")
@@ -109,11 +112,12 @@ class DevicePacketProcessor:
 
                 packet, callback, value = self.waiting_packets.get()
                 logger.debug(f"Found {packet} to send to {self.device.mac}")
-                gatt_instance.sendline(f"char-write-cmd 0x0015 {packet}")
-                gatt_instance.expect(".*")
+                sent_bytes = gatt_instance.sendline(f"char-write-cmd 0x0015 {packet}")
+                logger.debug(f"Sent {sent_bytes} in {packet} to {self.device.mac}")
+                k = gatt_instance.expect(".*")
+                logger.debug(f"PACKET {k}")
                 self.waiting_packets.task_done()
                 logger.debug(f"Sent {packet} to {self.device.mac}")
-                logger.debug(f"Last response: {gatt_instance.before}")
                 if callback != None:
                     callback(self.device, value)
                 sent_packets += 1
@@ -121,12 +125,13 @@ class DevicePacketProcessor:
 
             logger.debug(f"Depleted waiting packet queue for {self.device.mac}")
 
-            if total_loops == 10 or empty_loops == 4:
+            if total_loops == self.max_total_loops or empty_loops == self.max_empty_loops:
                 logger.info(f"Reached {total_loops} total loops and {empty_loops} empty loops")
                 break
 
             gatt_instance.sendline(packets.GoveePacket.keep_alive_packet())
-            gatt_instance.expect(".*")
+            k = gatt_instance.expect(".*")
+            logger.debug(f"KEEP ALIVE {k}")
             logger.debug(f"Last response: {gatt_instance.before}")
 
             logger.debug(f"Sent keep alive packet to {self.device.mac}")
