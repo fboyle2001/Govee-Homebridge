@@ -5,6 +5,7 @@ import packets
 import pexpect
 import time
 import logging
+import sys
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -69,7 +70,7 @@ class DevicePacketProcessor:
         if config["linux"]:
             logger.debug(f"Using Linux configuration so using gatttool")
             gatt_instance = pexpect.spawn("gatttool -I")
-            gatt_instance.logfile = open("gatt.log", "w")
+            gatt_instance.logfile = sys.stdout.buffer
         else:
             logger.debug(f"Using Windows configuration so using PExpectMock")
 
