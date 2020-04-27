@@ -51,7 +51,7 @@ goveeLEDStrip.prototype = {
           this.on = value;
           return next(null);
         }).catch(error => {
-          console.log(error.response.body);
+          console.log(error);
           return next(error);
         });
       })();
@@ -64,7 +64,7 @@ goveeLEDStrip.prototype = {
           this.on = value;
           return next(null);
         }).catch(error => {
-          console.log(error.response.body);
+          console.log(error);
           return next(error);
         });
       })();
@@ -83,7 +83,7 @@ goveeLEDStrip.prototype = {
         this.brightness = brightness;
         return next(null);
       }).catch(error => {
-        console.log(error.response.body);
+        console.log(error);
         return next(error);
       });
     })();
@@ -102,7 +102,7 @@ goveeLEDStrip.prototype = {
         this.hue = value;
         return next(null);
       }).catch(error => {
-        console.log(error.response.body);
+        console.log(error);
         return next(error);
       });
     })();
