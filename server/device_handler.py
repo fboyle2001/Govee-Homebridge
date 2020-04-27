@@ -38,8 +38,6 @@ class Device:
         self.on = False
         self.brightness = 0
 
-        self.packet_processor.start_processing()
-
 class DevicePacketProcessor:
     def __init__(self, device):
         self.device = device
@@ -53,6 +51,9 @@ class DevicePacketProcessor:
     def queue_packet(self, packet, callback, value):
         self.waiting_packets.put((packet, callback, value))
         logger.debug(f"Queued {packet} on {self.device.mac}, using callback {callback} with arg {value}")
+
+        if self.active == False:
+            self.start_processing()
 
     def stop_processing(self):
         self.active = False
@@ -92,10 +93,17 @@ class DevicePacketProcessor:
             logger.critical(f"Unable to connect to {self.device.mac}")
             raise ConnectionError("Unable to connect to " + self.device.mac)
 
+        empty_loops = 0
+        total_loops = 0
+
         while self.active:
             sent_packets = 0
 
+            if self.waiting_packets.qsize() == 0:
+                empty_loops += 1
+
             while self.waiting_packets.qsize() != 0:
+                empty_loops = 0
                 if sent_packets >= 16:
                     break
 
@@ -113,16 +121,22 @@ class DevicePacketProcessor:
 
             logger.debug(f"Depleted waiting packet queue for {self.device.mac}")
 
+            if total_loops == 10 or empty_loops == 4:
+                logger.info(f"Reached {total_loops} total loops and {empty_loops} empty loops")
+                break
+
             gatt_instance.sendline(packets.GoveePacket.keep_alive_packet())
             gatt_instance.expect(".*")
             logger.debug(f"Last response: {gatt_instance.before}")
 
             logger.debug(f"Sent keep alive packet to {self.device.mac}")
+            total_loops += 1
             time.sleep(self.send_alive_packet_period)
 
         gatt_instance.sendline("disconnect")
         gatt_instance.expect(".*")
         logger.info(f"Disconnected from {self.device.mac}")
+        self.active = False
 
 DEVICE_REGISTER = {}
 
