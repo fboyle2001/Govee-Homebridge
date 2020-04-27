@@ -69,8 +69,10 @@ class DevicePacketProcessor:
         if config["linux"]:
             logger.debug(f"Using Linux configuration so using gatttool")
             gatt_instance = pexpect.spawn("gatttool -I")
+            gatt_instance.logfile = open("gatt.log", "w")
         else:
             logger.debug(f"Using Windows configuration so using PExpectMock")
+
 
         connected = False
 
