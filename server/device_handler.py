@@ -1,6 +1,16 @@
 import threading
 from queue import Queue
 import packets
+import pexpect
+from config import config
+import time
+
+class PExpectMock:
+    def sendline(self, data):
+        return True
+
+    def expect(self, data, timeout=100):
+        return True
 
 class Device:
     def __init__(self, mac):
@@ -30,17 +40,21 @@ class DevicePacketProcessor:
 
     def start_processing(self):
         self.processing_thread = threading.Thread(target=self.process_packets)
+        self.processing_thread.setDaemon(True)
+        self.processing_thread.start()
 
     def process_packets(self):
         self.active = True
-        gatt_instance = pexpect.spawn("gatttool -I")
+        gatt_instance = PExpectMock()
+        if config["linux"]:
+            gatt_instance = pexpect.spawn("gatttool -I")
         connected = False
 
         for i in range(self.max_connect_attempts):
-            gatt.sendline(f"connect {self.device.mac}")
+            gatt_instance.sendline(f"connect {self.device.mac}")
 
             try:
-                gatt.expect("Connection successful", timeout = 3)
+                gatt_instance.expect("Connection successful", timeout = 3)
                 connected = True
                 break
             except pexpect.exceptions.TIMEOUT:
@@ -50,24 +64,26 @@ class DevicePacketProcessor:
             raise ConnectionError("Unable to connect to " + self.device.mac)
 
         while self.active:
-            for packet, callback in self.waiting_packets:
+            while self.waiting_packets.qsize() != 0:
+                packet, callback = self.waiting_packets.get()
                 gatt_instance.sendline(f"char-write-cmd 0x0015 {packet}")
                 gatt_instance.expect(".*")
                 self.waiting_packets.task_done()
                 callback(self.device)
-                sleep(self.delay_packet_period)
+                time.sleep(self.delay_packet_period)
 
             gatt_instance.sendline(packets.GoveePacket.keep_alive_packet())
             gatt_instance.expect(".*")
 
-            sleep(self.send_alive_packet_period)
+            time.sleep(self.send_alive_packet_period)
 
         gatt_instance.sendline("disconnect")
         gatt_instance.expect(".*")
 
-DEVICE_REGISTER = {
-    "mac": Device("mac")
-}#
+DEVICE_REGISTER = {}
 
 def get_device(mac):
-    pass
+    if mac not in DEVICE_REGISTER:
+        DEVICE_REGISTER[mac] = Device(mac)
+
+    return DEVICE_REGISTER[mac]
