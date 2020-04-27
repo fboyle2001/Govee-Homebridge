@@ -16,6 +16,11 @@ const got = require('got');
 function goveeLEDStrip(log, config) {
   this.log = log;
 
+  this.on = false;
+  this.brightness = 0;
+  this.hue = 0;
+  this.saturation = 0;
+
   this.informationService = new Service.AccessoryInformation();
   this.informationService.setCharacteristic(Characteristic.Manufacturer, "Govee");
   this.informationService.setCharacteristic(Characteristic.Model, "H6182");
